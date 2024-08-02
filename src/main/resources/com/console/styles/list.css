@@ -1,0 +1,11 @@
+.list-cell {
+    -fx-background-color: rgba(240, 240, 240, 0);
+    -fx-background-radius: 20;
+    -fx-text-fill: white;
+}
+
+.list-cell:selected {
+    -fx-background-color: rgb(28, 100, 152);
+    -fx-background-radius: 20;
+    -fx-text-fill: white;
+}
