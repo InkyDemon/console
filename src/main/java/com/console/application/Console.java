@@ -1,23 +1,37 @@
 package com.console.application;
 
 import com.console.Starter;
+import com.console.json.Preferences;
+import com.console.utils.ConsoleConstants;
+import com.console.utils.GsonUtils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 
 public class Console extends Application {
+    public static Preferences preferences;
+
     private double xOffset = 0;
     private double yOffset = 0;
 
     @Override
     public void start(Stage stage) throws IOException {
+        try {
+            this.preferences = GsonUtils.jsonToObject(Files.readString(ConsoleConstants.PREFERENCES_JSON), Preferences.class);
+        }
+        catch (NoSuchFileException noFileException) {
+            this.preferences = Preferences.getDefaultPreferences();
+            GsonUtils.objectToJson(preferences, ConsoleConstants.PREFERENCES_JSON);
+        }
+
         FXMLLoader fxmlLoader = new FXMLLoader(Starter.class.getResource("views/launcher.fxml"));
 
         Scene scene = new Scene(fxmlLoader.load(), 960, 540);

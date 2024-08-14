@@ -2,7 +2,7 @@ package com.console.controller;
 
 import com.console.Starter;
 import com.console.application.Console;
-import com.sun.management.OperatingSystemMXBean;
+import com.console.launch.Launcher;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
@@ -18,12 +18,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import javax.management.timer.Timer;
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.List;
 
 public class ConsoleController {
@@ -85,8 +84,6 @@ public class ConsoleController {
 
     private static boolean isEditProperties = true;
     private static boolean isEditGraphics = true;
-
-    private long totalMemorySize = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class).getTotalMemorySize() / 1024 / 1024;
 
     private List<ImageView> backgrounds = List.of(
             new ImageView(new Image(Starter.class.getResourceAsStream("backgrounds/background.png"))),
@@ -215,8 +212,8 @@ public class ConsoleController {
     }
 
     @FXML
-    public void onPlayPressed() {
-        //TODO start minecraft
+    public void onPlayPressed() throws IOException {
+        Launcher.launch(Console.preferences, Path.of("test"));
     }
 
     @FXML
@@ -253,7 +250,6 @@ public class ConsoleController {
 
     @FXML
     public void onGraphicsPressed() {
-        //TODO ШОРТКАТИК ГРАФИКЕ, А ТО НЕ ПОНЯТНО ЧТО ЭТО ГРАФИКА
         if (isEditGraphics) {
             isEditGraphics = false;
 
