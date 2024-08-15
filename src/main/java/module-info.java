@@ -1,5 +1,4 @@
 module console.main {
-    requires java.base;
     requires java.desktop;
     requires javafx.controls;
     requires javafx.fxml;
@@ -8,4 +7,6 @@ module console.main {
 
     opens com.console.application to javafx.graphics, javafx.fxml;
     opens com.console.controller to javafx.controls, javafx.fxml;
+
+    exports com.console.json to com.google.gson;
 }

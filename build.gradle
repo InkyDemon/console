@@ -1,9 +1,9 @@
 plugins {
     id "java"
     id "application"
+    id 'com.gradleup.shadow' version "${shadowJar_version}"
     id "org.javamodularity.moduleplugin" version "${javaModularity_version}"
     id "org.openjfx.javafxplugin" version "${javafxPlugin_version}"
-    id "org.beryx.jlink" version "${jlink_version}"
     id "edu.sc.seis.launch4j" version "${launch4j_version}"
 }
 
@@ -23,6 +23,15 @@ application {
     mainClass = "com.console.Starter"
 }
 
+shadowJar {
+
+}
+
+launch4j {
+    copyConfigurable = []
+    jarTask = tasks.shadowJar
+}
+
 javafx {
     version = "21"
     modules = ["javafx.controls", "javafx.fxml", "javafx.graphics"]
@@ -37,16 +46,4 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
-
-jlink {
-    imageZip = project.file("${buildDir}/distributions/app-${javafx.platform.classifier}.zip")
-    options = ["--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"]
-    launcher {
-        name = "app"
-    }
-}
-
-jlinkZip {
-    group = "distribution"
 }
