@@ -15,7 +15,7 @@ public class Launcher {
         }
         else {
             if (preferences.profile.uuid == null) {
-                preferences.profile.setUUID(UUID.randomUUID().toString());
+                preferences.profile.uuid = UUID.randomUUID().toString();
             }
 
             ArrayList<String> java_arguments = ConsoleConstants.DEFAULT_JAVA_ARGUMENTS;

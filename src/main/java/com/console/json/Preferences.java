@@ -11,14 +11,6 @@ public class Preferences {
         this.settings = settings;
     }
 
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-    }
-
-    public void setSettings(Settings settings) {
-        this.settings = settings;
-    }
-
     public static Preferences getDefaultPreferences() {
         Profile profile = new Profile(null, null);
         Settings settings = new Settings(512, 2048, new ArrayList<>());
@@ -32,14 +24,6 @@ public class Preferences {
 
         public Profile(String nickname, String uuid) {
             this.nickname = nickname;
-            this.uuid = uuid;
-        }
-
-        public void setNickname(String nickname) {
-            this.nickname = nickname;
-        }
-
-        public void setUUID(String uuid) {
             this.uuid = uuid;
         }
     }

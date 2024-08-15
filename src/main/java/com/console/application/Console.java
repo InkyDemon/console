@@ -2,6 +2,7 @@ package com.console.application;
 
 import com.console.Starter;
 import com.console.json.Preferences;
+import com.console.launch.GamesManager;
 import com.console.utils.ConsoleConstants;
 import com.console.utils.GsonUtils;
 import javafx.application.Application;
@@ -18,6 +19,7 @@ import java.nio.file.NoSuchFileException;
 
 public class Console extends Application {
     public static Preferences preferences;
+    public static GamesManager gamesManager;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -25,12 +27,14 @@ public class Console extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         try {
-            this.preferences = GsonUtils.jsonToObject(Files.readString(ConsoleConstants.PREFERENCES_JSON), Preferences.class);
+            preferences = GsonUtils.jsonToObject(Files.readString(ConsoleConstants.PREFERENCES_JSON), Preferences.class);
         }
         catch (NoSuchFileException noFileException) {
-            this.preferences = Preferences.getDefaultPreferences();
+            preferences = Preferences.getDefaultPreferences();
             GsonUtils.objectToJson(preferences, ConsoleConstants.PREFERENCES_JSON);
         }
+
+        gamesManager = new GamesManager(ConsoleConstants.GAMES_DIRECTORY);
 
         FXMLLoader fxmlLoader = new FXMLLoader(Starter.class.getResource("views/launcher.fxml"));
 

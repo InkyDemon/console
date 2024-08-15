@@ -23,10 +23,6 @@ application {
     mainClass = "com.console.Starter"
 }
 
-shadowJar {
-
-}
-
 launch4j {
     copyConfigurable = []
     jarTask = tasks.shadowJar
