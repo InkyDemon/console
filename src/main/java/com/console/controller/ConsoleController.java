@@ -2,7 +2,9 @@ package com.console.controller;
 
 import com.console.Starter;
 import com.console.application.Console;
+import com.console.json.GameInstance;
 import com.console.launch.Launcher;
+import com.console.utils.FileUtils;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
@@ -22,7 +24,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConsoleController {
@@ -85,14 +89,28 @@ public class ConsoleController {
     private static boolean isEditProperties = true;
     private static boolean isEditGraphics = true;
 
-    private List<ImageView> backgrounds = List.of(
-            new ImageView(new Image(Starter.class.getResourceAsStream("backgrounds/background.png"))),
-            new ImageView(new Image(Starter.class.getResourceAsStream("backgrounds/default_background.jpg"))),
-            new ImageView(new Image(Starter.class.getResourceAsStream("backgrounds/images.jpg")))
-    );
+    private final List<ImageView> backgrounds = new ArrayList<>();
 
     @FXML
-    public void initialize() throws IOException {
+    public void initialize() {
+        name = new Text("ВЫ");
+        Console.gamesManager.getGamesDirectories().forEach((gamePath) -> {
+            GameInstance gameInstance = Console.gamesManager.getGameInstance(gamePath);
+
+            name = new Text(gameInstance.name);
+            description = new Text(gameInstance.description);
+
+            FileUtils.getFilesList(Console.gamesManager.backgroundsDirectory).forEach((backgroundPath) -> {
+                if (Files.exists(backgroundPath)) {
+                    try {
+                        backgrounds.add(new ImageView(new Image(Files.newInputStream(backgroundPath))));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        });
+
         slideShow();
 
         graphicList.getItems().add("Easy");

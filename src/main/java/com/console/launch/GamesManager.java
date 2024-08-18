@@ -11,9 +11,20 @@ import java.util.stream.Stream;
 
 public class GamesManager {
     private final Path gamesDirectory;
+    private final Path assetsDirectory;
+
+    public final Path backgroundsDirectory;
+    public final Path minecraftDirectory;
+    public final Path icon;
+
 
     public GamesManager(Path gamesDirectory) {
         this.gamesDirectory = gamesDirectory;
+        this.assetsDirectory = gamesDirectory.resolve("assets");
+
+        this.minecraftDirectory = assetsDirectory.resolve("minecraft");
+        this.backgroundsDirectory = assetsDirectory.resolve("backgrounds");
+        this.icon = assetsDirectory.resolve("icon.png");
     }
 
     public GameInstance getGameInstance(Path gameDirectory) {

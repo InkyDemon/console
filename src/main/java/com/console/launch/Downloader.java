@@ -15,7 +15,7 @@ import java.util.zip.ZipInputStream;
 
 public class Downloader {
     public static void downloadGithubRep(String repUrl, Path outputDir) throws IOException {
-        if (Files.isDirectory(outputDir)) {
+        if (!Files.isDirectory(outputDir)) {
             throw new IllegalArgumentException("Переданный путь не является каталогом(Папкой).");
         }
 
@@ -29,11 +29,12 @@ public class Downloader {
             for (ZipEntry zipEntry = zipIS.getNextEntry(); zipEntry != null; zipEntry = zipIS.getNextEntry()) {
                 Path entryPath = outputDir.resolve(zipEntry.getName().replace(repDirName, ""));
 
-                if (zipEntry.isDirectory()) {
-                    Files.createDirectory(entryPath);
-                }
-                else try (FileChannel fileChannel = FileChannel.open(entryPath, StandardOpenOption.WRITE, StandardOpenOption.CREATE)) {
-                    fileChannel.transferFrom(Channels.newChannel(zipIS), 0, Long.MAX_VALUE);
+                if (!Files.exists(entryPath)) {
+                    if (zipEntry.isDirectory()) {
+                        Files.createDirectory(entryPath);
+                    } else try (FileChannel fileChannel = FileChannel.open(entryPath, StandardOpenOption.WRITE, StandardOpenOption.CREATE)) {
+                        fileChannel.transferFrom(Channels.newChannel(zipIS), 0, Long.MAX_VALUE);
+                    }
                 }
             }
         }

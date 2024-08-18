@@ -31,4 +31,13 @@ public class FileUtils {
             return new ArrayList<>();
         }
     }
+
+    public static ArrayList<Path> getFilesList(Path directory) {
+        try (Stream<Path> files = Files.list(directory)) {
+            return new ArrayList<>(files.toList());
+        }
+        catch (IOException ioException) {
+            return new ArrayList<>();
+        }
+    }
 }
