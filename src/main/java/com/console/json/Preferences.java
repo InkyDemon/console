@@ -1,5 +1,7 @@
 package com.console.json;
 
+import com.console.utils.ConsoleConstants;
+
 import java.util.ArrayList;
 
 public class Preferences {
@@ -12,8 +14,8 @@ public class Preferences {
     }
 
     public static Preferences getDefaultPreferences() {
-        Profile profile = new Profile(null, null);
-        Settings settings = new Settings(512, 2048, new ArrayList<>());
+        Profile profile = new Profile("", "");
+        Settings settings = new Settings(512, 2048, ConsoleConstants.DEFAULT_JAVA_ARGUMENTS);
 
         return new Preferences(profile, settings);
     }

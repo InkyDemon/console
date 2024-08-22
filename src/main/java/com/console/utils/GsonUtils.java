@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
@@ -20,8 +21,8 @@ public class GsonUtils {
         return DEFAULT_GSON.fromJson(json, objectType);
     }
 
-    public static void objectToJson(Object object, Path jsonFile) throws IOException {
-        try (BufferedWriter bufferedWriter = FileUtils.createFileWriter(jsonFile, StandardOpenOption.WRITE, StandardOpenOption.CREATE)) {
+    public static void objectToFile(Object object, Path jsonFile) throws IOException {
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(jsonFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
             DEFAULT_GSON.toJson(object, bufferedWriter);
         }
     }

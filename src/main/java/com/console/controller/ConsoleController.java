@@ -93,23 +93,8 @@ public class ConsoleController {
 
     @FXML
     public void initialize() {
-        name = new Text("ВЫ");
-        Console.gamesManager.getGamesDirectories().forEach((gamePath) -> {
-            GameInstance gameInstance = Console.gamesManager.getGameInstance(gamePath);
-
-            name = new Text(gameInstance.name);
-            description = new Text(gameInstance.description);
-
-            FileUtils.getFilesList(Console.gamesManager.backgroundsDirectory).forEach((backgroundPath) -> {
-                if (Files.exists(backgroundPath)) {
-                    try {
-                        backgrounds.add(new ImageView(new Image(Files.newInputStream(backgroundPath))));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-        });
+        nickname.setText(Console.preferences.profile.nickname);
+        javaArguments.setText(String.join(" ", Console.preferences.settings.java_arguments));
 
         slideShow();
 

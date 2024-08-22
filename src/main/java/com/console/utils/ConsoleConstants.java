@@ -15,7 +15,6 @@ public class ConsoleConstants {
     public static final Path PREFERENCES_JSON = LAUNCHER_DIRECTORY.resolve("preferences.json");
 
     public static final ArrayList<String> DEFAULT_JAVA_ARGUMENTS = new ArrayList<>(){{
-        add(JAVA_EXE.toString());
         add("-XX:-UseAdaptiveSizePolicy");
         add("-XX:-OmitStackTraceInFastThrow");
         add("-Dfml.ignorePatchDiscrepancies=true");

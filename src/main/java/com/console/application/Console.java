@@ -8,6 +8,7 @@ import com.console.utils.GsonUtils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -15,7 +16,6 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 
 public class Console extends Application {
     public static Preferences preferences;
@@ -26,12 +26,12 @@ public class Console extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        try {
+        if (Files.exists(ConsoleConstants.PREFERENCES_JSON)) {
             preferences = GsonUtils.jsonToObject(Files.readString(ConsoleConstants.PREFERENCES_JSON), Preferences.class);
         }
-        catch (NoSuchFileException noFileException) {
+        else {
             preferences = Preferences.getDefaultPreferences();
-            GsonUtils.objectToJson(preferences, ConsoleConstants.PREFERENCES_JSON);
+            GsonUtils.objectToFile(preferences, ConsoleConstants.PREFERENCES_JSON);
         }
 
         gamesManager = new GamesManager(ConsoleConstants.GAMES_DIRECTORY);

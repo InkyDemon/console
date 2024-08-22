@@ -1,50 +1,38 @@
 package com.console.launch;
 
-import com.console.json.GameInstance;
-import com.console.utils.GsonUtils;
+import com.console.utils.FileUtils;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.stream.Stream;
+import java.util.HashMap;
 
 public class GamesManager {
-    private final Path gamesDirectory;
-    private final Path assetsDirectory;
-
-    public final Path backgroundsDirectory;
-    public final Path minecraftDirectory;
-    public final Path icon;
-
+    private final Path GAMES_DIRECTORY;
+    private final HashMap<String, Game> GAMES;
 
     public GamesManager(Path gamesDirectory) {
-        this.gamesDirectory = gamesDirectory;
-        this.assetsDirectory = gamesDirectory.resolve("assets");
+        this.GAMES_DIRECTORY = gamesDirectory;
+        this.GAMES = new HashMap<>();
 
-        this.minecraftDirectory = assetsDirectory.resolve("minecraft");
-        this.backgroundsDirectory = assetsDirectory.resolve("backgrounds");
-        this.icon = assetsDirectory.resolve("icon.png");
+        this.updateGames();
     }
 
-    public GameInstance getGameInstance(Path gameDirectory) {
-        Path instanceJson = gameDirectory.resolve("instance.json");
-        try {
-            if (Files.exists(instanceJson)) {
-                return GsonUtils.jsonToObject(Files.readString(instanceJson), GameInstance.class);
-            }
-        }
-        catch (IOException ignored) {}
-
-        return new GameInstance("not found", "not found", "not found");
+    public Path getGamesDirectory() {
+        return GAMES_DIRECTORY;
     }
 
-    public ArrayList<Path> getGamesDirectories() {
-        try (Stream<Path> files = Files.list(gamesDirectory)) {
-           return new ArrayList<>(files.filter((path) -> Files.isDirectory(path) && Files.exists(path.resolve("instance.json"))).toList());
-        }
-        catch (IOException ioException) {
-            return new ArrayList<>();
-        }
+    public HashMap<String, Game> getGames() {
+        return GAMES;
+    }
+
+    public void updateGames() {
+        ArrayList<Path> gamesPaths = FileUtils.getFilesList(GAMES_DIRECTORY, (path) -> Files.isDirectory(path) && Files.exists(path.resolve("instance.json")));
+
+        gamesPaths.forEach(path -> {
+            Game game = new Game(path);
+
+            GAMES.put(game.instance.name, game);
+        });
     }
 }

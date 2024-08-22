@@ -3,10 +3,12 @@ package com.console.launch;
 import com.console.utils.UrlUtils;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
@@ -15,10 +17,6 @@ import java.util.zip.ZipInputStream;
 
 public class Downloader {
     public static void downloadGithubRep(String repUrl, Path outputDir) throws IOException {
-        if (!Files.isDirectory(outputDir)) {
-            throw new IllegalArgumentException("Переданный путь не является каталогом(Папкой).");
-        }
-
         URL toUrl = UrlUtils.createUrl(repUrl);
 
         try (ZipInputStream zipIS = new ZipInputStream(toUrl.openStream())) {
@@ -37,9 +35,6 @@ public class Downloader {
                     }
                 }
             }
-        }
-        catch (NullPointerException nullPointerException) {
-            throw new IllegalArgumentException("Url не содержит zip-архив репозитория или же архив пуст.", nullPointerException);
         }
     }
 }

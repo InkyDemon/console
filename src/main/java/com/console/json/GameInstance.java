@@ -1,5 +1,11 @@
 package com.console.json;
 
+import com.console.utils.GsonUtils;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class GameInstance {
     public String name;
     public String description;
@@ -9,5 +15,20 @@ public class GameInstance {
         this.name = name;
         this.description = description;
         this.version = version;
+    }
+
+    public static GameInstance getDefaultInstance() {
+        return new GameInstance("Название", "Описание", "Версия");
+    }
+
+    public static GameInstance fromFile(Path file) {
+        try {
+            String json = Files.readString(file);
+
+            return GsonUtils.jsonToObject(json, GameInstance.class);
+        }
+        catch (IOException ioException) {
+            return GameInstance.getDefaultInstance();
+        }
     }
 }
