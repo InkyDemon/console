@@ -14,7 +14,7 @@ public class ConsoleConstants {
 
     public static final Path PREFERENCES_JSON = LAUNCHER_DIRECTORY.resolve("preferences.json");
 
-    public static final ArrayList<String> DEFAULT_JAVA_ARGUMENTS = new ArrayList<>(){{
+    public static final ArrayList<String> DEFAULT_JAVA_ARGUMENTS = new ArrayList<>() {{
         add("-XX:-UseAdaptiveSizePolicy");
         add("-XX:-OmitStackTraceInFastThrow");
         add("-Dfml.ignorePatchDiscrepancies=true");
@@ -28,7 +28,7 @@ public class ConsoleConstants {
         add("-Dlog4j.configurationFile=" + ASSETS_DIRECTORY.resolve("log4j2_112-116.xml"));
     }};
 
-    public static final ArrayList<String> DEFAULT_MINECRAFT_ARGUMENTS = new ArrayList<>(){{
+    public static final ArrayList<String> DEFAULT_MINECRAFT_ARGUMENTS = new ArrayList<>() {{
         add("--version"); add("1.12.2");
         add("--assetsDir"); add(ASSETS_DIRECTORY.resolve("assets").toString());
         add("--assetIndex"); add("1.12.2-forge");
@@ -37,7 +37,7 @@ public class ConsoleConstants {
         add("--versionType"); add("Forge");
     }};
     
-    public static final ArrayList<String> DEFAULT_LIBRARIES = new ArrayList<>(){{
+    public static final ArrayList<String> DEFAULT_LIBRARIES = new ArrayList<>() {{
         add("libraries/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar");
         add("libraries/com/google/guava/guava/21.0/guava-21.0.jar");
         add("libraries/com/ibm/icu/icu4j-core-mojang/51.2/icu4j-core-mojang-51.2.jar");
