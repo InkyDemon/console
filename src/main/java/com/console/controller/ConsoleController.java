@@ -1,6 +1,8 @@
 package com.console.controller;
 
 import com.console.application.Console;
+import com.console.launch.Game;
+import com.console.launch.GamesManager;
 import com.console.launch.Launcher;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
@@ -84,6 +86,7 @@ public class ConsoleController {
     private static boolean isEditProperties = true;
     private static boolean isEditGraphics = true;
 
+    private Game selectedGame = Console.gamesManager.getGames().get("test");
     private final List<ImageView> backgrounds = new ArrayList<>();
 
     @FXML
@@ -211,7 +214,7 @@ public class ConsoleController {
 
     @FXML
     public void onPlayPressed() throws IOException {
-        Launcher.launch(Console.preferences, Path.of("test"));
+        Launcher.launch(Console.preferences, selectedGame);
     }
 
     @FXML
