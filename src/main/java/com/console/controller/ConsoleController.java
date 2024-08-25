@@ -99,6 +99,37 @@ public class ConsoleController {
     private Game selectedGame = Console.gamesManager.getGames().get("test");
     private final List<ImageView> backgrounds = new ArrayList<>();
 
+    private final Thread animationThread = new Thread(() -> {
+        try {
+            Thread.sleep(5000);
+
+            if (!Thread.currentThread().isInterrupted() && getBackgrounds().getLast() instanceof ImageView image) {
+                FadeTransition fadeTransition = new FadeTransition(Duration.seconds(5), image);
+
+                fadeTransition.setFromValue(1);
+                fadeTransition.setToValue(0);
+
+                fadeTransition.setOnFinished(actionEvent -> {
+                    getBackgrounds().removeLast();
+
+                    image.setOpacity(1);
+                    image.setStyle("-fx-image-radius: 10");
+
+                    getBackgrounds().addFirst(image);
+
+                    playAnimation();
+                });
+
+                fadeTransition.play();
+            }
+            else if (Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().wait();
+            }
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+    });
+
     @FXML
     public void initialize() {
         nickname.setText(Console.preferences.profile.nickname);
@@ -113,13 +144,6 @@ public class ConsoleController {
                 iconImage.setFitHeight(48);
                 iconImage.setOnMouseClicked(mouseEvent -> {
                     selectedGame = game;
-                    Thread[] threads = new Thread[Thread.activeCount()];
-                    Thread.enumerate(threads);
-                    for (Thread thread : threads) {
-                        if (thread.getName().equals(selectedGame.instance.name)) {
-                            thread.interrupt();
-                        }
-                    }
                     updateGameData();
                 });
                 games.getChildren().add(iconImage);
@@ -169,35 +193,7 @@ public class ConsoleController {
     }
 
     private void playAnimation() {
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-
-                if (getBackgrounds().getLast() instanceof ImageView image) {
-                    FadeTransition fadeTransition = new FadeTransition(Duration.seconds(5), image);
-
-                    fadeTransition.setFromValue(1);
-                    fadeTransition.setToValue(0);
-
-                    fadeTransition.setOnFinished(actionEvent -> {
-                        getBackgrounds().removeLast();
-
-                        image.setOpacity(1);
-                        image.setStyle("-fx-image-radius: 10");
-
-                        getBackgrounds().addFirst(image);
-
-                        playAnimation();
-                    });
-
-                    fadeTransition.play();
-                }
-            } catch (InterruptedException e) {
-                return;
-            }
-        });
-        thread.setName(selectedGame.instance.name);
-        thread.start();
+        animationThread.interrupt();
     }
 
     private List<Node> getBackgrounds() {
@@ -220,6 +216,7 @@ public class ConsoleController {
         graphicList.getItems().clear();
         backgrounds.clear();
         AnchorBackgrounds.getChildren().clear();
+        animationThread.interrupt();
 
         name.setText(selectedGame.instance.name);
         description.setText(selectedGame.instance.description);
