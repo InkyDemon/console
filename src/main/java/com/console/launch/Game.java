@@ -3,6 +3,7 @@ package com.console.launch;
 import com.console.json.GameInstance;
 import com.console.utils.FileUtils;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 
@@ -28,7 +29,7 @@ public class Game {
         this.BACKGROUNDS_DIRECTORY = ASSETS_DIRECTORY.resolve("backgrounds");
 
         this.GRAPHICS_PATHS = new HashMap<>();
-        FileUtils.getFilesList(MINECRAFT_DIRECTORY).forEach(path -> GRAPHICS_PATHS.put(path.getFileName().toString(), path));
+        FileUtils.getFilesList(MINECRAFT_DIRECTORY, Files::isDirectory).forEach(path -> GRAPHICS_PATHS.put(path.getFileName().toString(), path));
 
         this.instance = GameInstance.fromFile(INSTANCE_FILE);
     }

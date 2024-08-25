@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -189,7 +190,7 @@ public class ConsoleController {
 
     private void updateGameData() {
         selectedGame.GRAPHICS_PATHS.keySet().forEach(s -> graphicList.getItems().add(s));
-        FileUtils.getFilesList(selectedGame.BACKGROUNDS_DIRECTORY).forEach(path -> {
+        FileUtils.getFilesList(selectedGame.BACKGROUNDS_DIRECTORY, path -> path.toString().endsWith(".png")).forEach(path -> {
             try {
                 backgrounds.add(new ImageView(new Image(new FileInputStream(path.toFile()))));
             } catch (FileNotFoundException e) {
