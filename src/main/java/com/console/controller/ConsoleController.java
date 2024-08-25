@@ -1,9 +1,12 @@
 package com.console.controller;
 
 import com.console.application.Console;
+import com.console.json.Preferences;
 import com.console.launch.Game;
-import com.console.launch.GamesManager;
 import com.console.launch.Launcher;
+import com.console.utils.ConsoleConstants;
+import com.console.utils.FileUtils;
+import com.console.utils.GsonUtils;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
@@ -12,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
@@ -19,10 +23,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,15 +99,11 @@ public class ConsoleController {
         nickname.setText(Console.preferences.profile.nickname);
         javaArguments.setText(String.join(" ", Console.preferences.settings.java_arguments));
 
+        updateGameData();
         slideShow();
 
-        graphicList.getItems().add("Easy");
-        graphicList.getItems().add("Medium");
-        graphicList.getItems().add("Hard");
-        graphicList.getItems().add("Ultra");
+        graphicList.getSelectionModel().select(graphicList.getItems().getFirst());
 
-        name.setFont(Console.getPixelTimes(true, 48));
-        description.setFont(Console.getPixelTimes(false, 16));
         nickname.setFont(Console.getPixelTimes(true, 12));
         textGraphic.setFont(Console.getPixelTimes(false, 12));
         graphicList.setCellFactory(lv -> new ListCell<>() {
@@ -136,7 +137,9 @@ public class ConsoleController {
             AnchorBackgrounds.getChildren().addLast(image);
         }
 
-        playAnimation();
+        if (backgrounds.size() > 1) {
+            playAnimation();
+        }
     }
 
     private void playAnimation() {
@@ -184,6 +187,32 @@ public class ConsoleController {
         Desktop.getDesktop().browse(new URI("https://discord.gg/eVAwVvq4KK"));
     }
 
+    private void updateGameData() {
+        selectedGame.GRAPHICS_PATHS.keySet().forEach(s -> graphicList.getItems().add(s));
+        FileUtils.getFilesList(selectedGame.BACKGROUNDS_DIRECTORY).forEach(path -> {
+            try {
+                backgrounds.add(new ImageView(new Image(new FileInputStream(path.toFile()))));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        name.setFont(Console.getPixelTimes(true, 48));
+        description.setFont(Console.getPixelTimes(false, 16));
+    }
+
+    private void updatePreferences() {
+        Console.preferences.profile.nickname = nickname.getText();
+        Console.preferences.settings.ram = Integer.parseInt(ram.getText());
+        Console.preferences.settings.java_arguments = new ArrayList<>(List.of(javaArguments.getText().split(" ")));
+
+        try {
+            GsonUtils.objectToFile(Console.preferences, ConsoleConstants.PREFERENCES_JSON);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @FXML
     public void onUserPressed() {
         if (isEditNickname) {
@@ -204,9 +233,7 @@ public class ConsoleController {
 
             PauseTransition pauseTransition = new PauseTransition(Duration.millis(400));
 
-            pauseTransition.setOnFinished(event -> {
-                isEditNickname = true;
-            });
+            pauseTransition.setOnFinished(event -> isEditNickname = true);
 
             pauseTransition.play();
         }
@@ -214,7 +241,9 @@ public class ConsoleController {
 
     @FXML
     public void onPlayPressed() throws IOException {
-        Launcher.launch(Console.preferences, selectedGame);
+        updatePreferences();
+        Launcher.launch(Console.preferences, selectedGame, graphicList.getSelectionModel().getSelectedItem());
+        System.exit(0);
     }
 
     @FXML
@@ -241,9 +270,7 @@ public class ConsoleController {
 
             PauseTransition pauseTransition = new PauseTransition(Duration.millis(300));
 
-            pauseTransition.setOnFinished(event -> {
-                isEditProperties = true;
-            });
+            pauseTransition.setOnFinished(event -> isEditProperties = true);
 
             pauseTransition.play();
         }
@@ -274,9 +301,7 @@ public class ConsoleController {
 
             PauseTransition pauseTransition = new PauseTransition(Duration.millis(300));
 
-            pauseTransition.setOnFinished(event -> {
-                isEditGraphics = true;
-            });
+            pauseTransition.setOnFinished(event -> isEditGraphics = true);
 
             pauseTransition.play();
         }

@@ -1,8 +1,10 @@
 package com.console.launch;
 
 import com.console.json.GameInstance;
+import com.console.utils.FileUtils;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 
 public class Game {
     public final Path GAME_DIRECTORY;
@@ -11,6 +13,8 @@ public class Game {
     public final Path INSTANCE_FILE;
     public final Path MINECRAFT_DIRECTORY;
     public final Path ICON;
+
+    public final HashMap<String, Path> GRAPHICS_PATHS;
 
     public GameInstance instance;
 
@@ -22,6 +26,9 @@ public class Game {
         this.MINECRAFT_DIRECTORY = ASSETS_DIRECTORY.resolve("minecraft");
         this.ICON = ASSETS_DIRECTORY.resolve("icon.png");
         this.BACKGROUNDS_DIRECTORY = ASSETS_DIRECTORY.resolve("backgrounds");
+
+        this.GRAPHICS_PATHS = new HashMap<>();
+        FileUtils.getFilesList(MINECRAFT_DIRECTORY).forEach(path -> GRAPHICS_PATHS.put(path.getFileName().toString(), path));
 
         this.instance = GameInstance.fromFile(INSTANCE_FILE);
     }

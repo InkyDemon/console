@@ -15,7 +15,7 @@ public class Preferences {
 
     public static Preferences getDefaultPreferences() {
         Profile profile = new Profile("", "");
-        Settings settings = new Settings(512, 2048, ConsoleConstants.DEFAULT_JAVA_ARGUMENTS);
+        Settings settings = new Settings(2048, ConsoleConstants.DEFAULT_JAVA_ARGUMENTS);
 
         return new Preferences(profile, settings);
     }
@@ -31,15 +31,12 @@ public class Preferences {
     }
 
     public static class Settings {
-        public int min_ram;
-        public int max_ram;
+        public int ram;
 
         public ArrayList<String> java_arguments;
 
-        public Settings(int min_ram, int max_ram, ArrayList<String> java_arguments) {
-            this.min_ram = min_ram;
-            this.max_ram = max_ram;
-
+        public Settings(int ram, ArrayList<String> java_arguments) {
+            this.ram = ram;
             this.java_arguments = java_arguments;
         }
     }
