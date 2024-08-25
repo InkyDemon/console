@@ -1,7 +1,6 @@
 package com.console.controller;
 
 import com.console.application.Console;
-import com.console.json.Preferences;
 import com.console.launch.Game;
 import com.console.launch.Launcher;
 import com.console.utils.ConsoleConstants;
@@ -9,6 +8,7 @@ import com.console.utils.FileUtils;
 import com.console.utils.GsonUtils;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
+import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -18,6 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -28,9 +29,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ConsoleController {
     @FXML
@@ -87,6 +88,9 @@ public class ConsoleController {
     @FXML
     private Text textJavaArguments;
 
+    @FXML
+    private VBox games;
+
     private static boolean isEditNickname = true;
 
     private static boolean isEditProperties = true;
@@ -101,9 +105,31 @@ public class ConsoleController {
         javaArguments.setText(String.join(" ", Console.preferences.settings.java_arguments));
 
         updateGameData();
-        slideShow();
 
-        graphicList.getSelectionModel().select(graphicList.getItems().getFirst());
+        Console.gamesManager.getGames().values().forEach(game -> {
+            try {
+                ImageView iconImage = new ImageView(new Image(new FileInputStream(game.ICON.toFile())));
+                iconImage.setFitWidth(48);
+                iconImage.setFitHeight(48);
+                iconImage.setOnMouseClicked(mouseEvent -> {
+                    selectedGame = game;
+                    Thread[] threads = new Thread[Thread.activeCount()];
+                    Thread.enumerate(threads);
+                    for (Thread thread : threads) {
+                        if (thread.getName().equals(selectedGame.instance.name)) {
+                            thread.interrupt();
+                        }
+                    }
+                    updateGameData();
+                });
+                games.getChildren().add(iconImage);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        name.setFont(Console.getPixelTimes(true, 48));
+        description.setFont(Console.getPixelTimes(false, 16));
 
         nickname.setFont(Console.getPixelTimes(true, 12));
         textGraphic.setFont(Console.getPixelTimes(false, 12));
@@ -129,8 +155,7 @@ public class ConsoleController {
     }
 
     public void slideShow() {
-        for (int i = 0; i < backgrounds.size(); i++) {
-            ImageView image = backgrounds.get(i);
+        for (ImageView image : backgrounds) {
             image.setFitWidth(960);
             image.setFitHeight(540);
             image.setOpacity(1);
@@ -144,7 +169,7 @@ public class ConsoleController {
     }
 
     private void playAnimation() {
-        new Thread(() -> {
+        Thread thread = new Thread(() -> {
             try {
                 Thread.sleep(5000);
 
@@ -168,9 +193,11 @@ public class ConsoleController {
                     fadeTransition.play();
                 }
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                return;
             }
-        }).start();
+        });
+        thread.setName(selectedGame.instance.name);
+        thread.start();
     }
 
     private List<Node> getBackgrounds() {
@@ -179,6 +206,7 @@ public class ConsoleController {
 
     @FXML
     public void onExitPressed() {
+        updatePreferences();
         Stage stage = (Stage) exit.getScene().getWindow();
         stage.close();
     }
@@ -189,8 +217,15 @@ public class ConsoleController {
     }
 
     private void updateGameData() {
+        graphicList.getItems().clear();
+        backgrounds.clear();
+        AnchorBackgrounds.getChildren().clear();
+
+        name.setText(selectedGame.instance.name);
+        description.setText(selectedGame.instance.description);
+
         selectedGame.GRAPHICS_PATHS.keySet().forEach(s -> graphicList.getItems().add(s));
-        FileUtils.getFilesList(selectedGame.BACKGROUNDS_DIRECTORY, path -> path.toString().endsWith(".png")).forEach(path -> {
+        FileUtils.getFilesList(selectedGame.BACKGROUNDS_DIRECTORY, path -> path.toString().endsWith(".png") || path.toString().endsWith(".jpg") || path.toString().endsWith(".gif")).forEach(path -> {
             try {
                 backgrounds.add(new ImageView(new Image(new FileInputStream(path.toFile()))));
             } catch (FileNotFoundException e) {
@@ -198,8 +233,8 @@ public class ConsoleController {
             }
         });
 
-        name.setFont(Console.getPixelTimes(true, 48));
-        description.setFont(Console.getPixelTimes(false, 16));
+        slideShow();
+        graphicList.getSelectionModel().select(graphicList.getItems().getFirst());
     }
 
     private void updatePreferences() {

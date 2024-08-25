@@ -53,14 +53,7 @@
                   <Image url="@../icons/user.png" />
                </image>
             </ImageView>
-            <VBox alignment="CENTER" layoutX="3.0" layoutY="52.0" prefHeight="489.0" prefWidth="47.0">
-               <children>
-                  <ImageView fx:id="rejim" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../rejim.png" />
-                     </image></ImageView>
-               </children>
-            </VBox>
+            <VBox fx:id="games" alignment="CENTER" layoutX="3.0" layoutY="52.0" prefHeight="489.0" prefWidth="47.0" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="mainBar" layoutX="146.0" prefHeight="540.0" prefWidth="429.0">
