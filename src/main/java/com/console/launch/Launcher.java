@@ -2,6 +2,7 @@ package com.console.launch;
 
 import com.console.json.Preferences;
 import com.console.utils.ConsoleConstants;
+import com.console.utils.GsonUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +18,7 @@ public class Launcher {
         else {
             preferences.profile.uuid = (preferences.profile.uuid.isEmpty() ? UUID.randomUUID().toString(): preferences.profile.uuid);
             preferences.settings.java_arguments = (preferences.settings.java_arguments.equals(new ArrayList<String>()) ? ConsoleConstants.DEFAULT_JAVA_ARGUMENTS: preferences.settings.java_arguments);
-
+            GsonUtils.objectToFile(preferences, ConsoleConstants.PREFERENCES_JSON);
             Path gamePath = selectedGame.GRAPHICS_PATHS.get(graphicsSetting);
 
             ArrayList<String> finalCommand = new ArrayList<>();
@@ -34,10 +35,13 @@ public class Launcher {
             finalCommand.add("--uuid"); finalCommand.add(preferences.profile.uuid);
             finalCommand.add("--accessToken"); finalCommand.add(preferences.profile.uuid);
 
+            System.out.println(finalCommand);
+
             ProcessBuilder processBuilder = new ProcessBuilder(finalCommand);
             processBuilder.directory(gamePath.toFile());
 
             processBuilder.start();
+            System.exit(0);
         }
     }
 }

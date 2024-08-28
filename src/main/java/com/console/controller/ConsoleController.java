@@ -100,10 +100,11 @@ public class ConsoleController {
 
     @FXML
     public void initialize() {
+        ram.setText(String.valueOf(Console.preferences.settings.ram));
         nickname.setText(Console.preferences.profile.nickname);
         javaArguments.setText(String.join(" ", Console.preferences.settings.java_arguments));
-
         this.updateGameData();
+
         this.updateBackgroundsNodes();
         if (getBackgrounds().size() > 1) {
             backgroundsTransition.playFromStart();
@@ -116,14 +117,16 @@ public class ConsoleController {
                 iconImage.setFitHeight(48);
 
                 iconImage.setOnMouseClicked(mouseEvent -> {
-                    selectedGame = game;
-                    this.updateGameData();
+                    if (selectedGame != game) {
+                        selectedGame = game;
+                        this.updateGameData();
 
-                    backgroundsTransition.pause();
-                    this.updateBackgroundsNodes();
+                        backgroundsTransition.pause();
+                        this.updateBackgroundsNodes();
 
-                    if (getBackgrounds().size() > 1) {
-                        backgroundsTransition.playFromStart();
+                        if (getBackgrounds().size() > 1) {
+                            backgroundsTransition.playFromStart();
+                        }
                     }
                 });
 
@@ -201,7 +204,6 @@ public class ConsoleController {
     public void onPlayPressed() throws IOException {
         updatePreferences();
         Launcher.launch(Console.preferences, selectedGame, graphicList.getSelectionModel().getSelectedItem());
-        System.exit(0);
     }
 
     @FXML
