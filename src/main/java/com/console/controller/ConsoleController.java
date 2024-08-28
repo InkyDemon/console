@@ -105,7 +105,9 @@ public class ConsoleController {
 
         this.updateGameData();
         this.updateBackgroundsNodes();
-        backgroundsTransition.playFromStart();
+        if (getBackgrounds().size() > 1) {
+            backgroundsTransition.playFromStart();
+        }
 
         Console.gamesManager.getGames().values().forEach(game -> {
             try (InputStream iconIS = Files.newInputStream(game.ICON)) {
@@ -119,7 +121,10 @@ public class ConsoleController {
 
                     backgroundsTransition.pause();
                     this.updateBackgroundsNodes();
-                    backgroundsTransition.playFromStart();
+
+                    if (getBackgrounds().size() > 1) {
+                        backgroundsTransition.playFromStart();
+                    }
                 });
 
                 games.getChildren().add(iconImage);
@@ -280,8 +285,11 @@ public class ConsoleController {
                 getBackgrounds().getFirst().setOpacity(1);
 
                 this.backgroundsTransition = getBackgroundsTransition();
-                backgroundsTransition.setNode(getBackgrounds().getLast());
-                backgroundsTransition.playFromStart();
+
+                if (getBackgrounds().size() > 1) {
+                    backgroundsTransition.setNode(getBackgrounds().getLast());
+                    backgroundsTransition.playFromStart();
+                }
             }
         });
 
@@ -320,7 +328,10 @@ public class ConsoleController {
         });
 
         this.backgroundsTransition = getBackgroundsTransition();
-        backgroundsTransition.setNode(getBackgrounds().getLast());
+
+        if (!getBackgrounds().isEmpty()) {
+            backgroundsTransition.setNode(getBackgrounds().getLast());
+        }
     }
 
     private void updateGameData() {
