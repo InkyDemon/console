@@ -6,10 +6,8 @@ import com.console.launch.Launcher;
 import com.console.utils.ConsoleConstants;
 import com.console.utils.FileUtils;
 import com.console.utils.GsonUtils;
-import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.Transition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ListCell;
@@ -27,11 +25,12 @@ import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ConsoleController {
     @FXML
@@ -97,58 +96,35 @@ public class ConsoleController {
     private static boolean isEditGraphics = true;
 
     private Game selectedGame = Console.gamesManager.getGames().get("test");
-    private final List<ImageView> backgrounds = new ArrayList<>();
-
-    private final Thread animationThread = new Thread(() -> {
-        try {
-            Thread.sleep(5000);
-
-            if (!Thread.currentThread().isInterrupted() && getBackgrounds().getLast() instanceof ImageView image) {
-                FadeTransition fadeTransition = new FadeTransition(Duration.seconds(5), image);
-
-                fadeTransition.setFromValue(1);
-                fadeTransition.setToValue(0);
-
-                fadeTransition.setOnFinished(actionEvent -> {
-                    getBackgrounds().removeLast();
-
-                    image.setOpacity(1);
-                    image.setStyle("-fx-image-radius: 10");
-
-                    getBackgrounds().addFirst(image);
-
-                    playAnimation();
-                });
-
-                fadeTransition.play();
-            }
-            else if (Thread.currentThread().isInterrupted()) {
-                Thread.currentThread().wait();
-            }
-        } catch (InterruptedException ignored) {
-            Thread.currentThread().interrupt();
-        }
-    });
+    private SequentialTransition backgroundsTransition = this.getBackgroundsTransition();
 
     @FXML
     public void initialize() {
         nickname.setText(Console.preferences.profile.nickname);
         javaArguments.setText(String.join(" ", Console.preferences.settings.java_arguments));
 
-        updateGameData();
+        this.updateGameData();
+        this.updateBackgroundsNodes();
+        backgroundsTransition.playFromStart();
 
         Console.gamesManager.getGames().values().forEach(game -> {
-            try {
-                ImageView iconImage = new ImageView(new Image(new FileInputStream(game.ICON.toFile())));
+            try (InputStream iconIS = Files.newInputStream(game.ICON)) {
+                ImageView iconImage = new ImageView(new Image(iconIS));
                 iconImage.setFitWidth(48);
                 iconImage.setFitHeight(48);
+
                 iconImage.setOnMouseClicked(mouseEvent -> {
                     selectedGame = game;
-                    updateGameData();
+                    this.updateGameData();
+
+                    backgroundsTransition.pause();
+                    this.updateBackgroundsNodes();
+                    backgroundsTransition.playFromStart();
                 });
+
                 games.getChildren().add(iconImage);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
+            } catch (IOException ioException) {
+                throw new RuntimeException(ioException);
             }
         });
 
@@ -178,28 +154,6 @@ public class ConsoleController {
         javaArguments.setFont(Console.getPixelTimes(false, 12));
     }
 
-    public void slideShow() {
-        for (ImageView image : backgrounds) {
-            image.setFitWidth(960);
-            image.setFitHeight(540);
-            image.setOpacity(1);
-
-            AnchorBackgrounds.getChildren().addLast(image);
-        }
-
-        if (backgrounds.size() > 1) {
-            playAnimation();
-        }
-    }
-
-    private void playAnimation() {
-        animationThread.interrupt();
-    }
-
-    private List<Node> getBackgrounds() {
-        return AnchorBackgrounds.getChildren();
-    }
-
     @FXML
     public void onExitPressed() {
         updatePreferences();
@@ -210,40 +164,6 @@ public class ConsoleController {
     @FXML
     public void onDiscordPressed() throws URISyntaxException, IOException {
         Desktop.getDesktop().browse(new URI("https://discord.gg/eVAwVvq4KK"));
-    }
-
-    private void updateGameData() {
-        graphicList.getItems().clear();
-        backgrounds.clear();
-        AnchorBackgrounds.getChildren().clear();
-        animationThread.interrupt();
-
-        name.setText(selectedGame.instance.name);
-        description.setText(selectedGame.instance.description);
-
-        selectedGame.GRAPHICS_PATHS.keySet().forEach(s -> graphicList.getItems().add(s));
-        FileUtils.getFilesList(selectedGame.BACKGROUNDS_DIRECTORY, path -> path.toString().endsWith(".png") || path.toString().endsWith(".jpg") || path.toString().endsWith(".gif")).forEach(path -> {
-            try {
-                backgrounds.add(new ImageView(new Image(new FileInputStream(path.toFile()))));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        slideShow();
-        graphicList.getSelectionModel().select(graphicList.getItems().getFirst());
-    }
-
-    private void updatePreferences() {
-        Console.preferences.profile.nickname = nickname.getText();
-        Console.preferences.settings.ram = Integer.parseInt(ram.getText());
-        Console.preferences.settings.java_arguments = new ArrayList<>(List.of(javaArguments.getText().split(" ")));
-
-        try {
-            GsonUtils.objectToFile(Console.preferences, ConsoleConstants.PREFERENCES_JSON);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @FXML
@@ -337,6 +257,92 @@ public class ConsoleController {
             pauseTransition.setOnFinished(event -> isEditGraphics = true);
 
             pauseTransition.play();
+        }
+    }
+
+    private ObservableList<Node> getBackgrounds() {
+        return AnchorBackgrounds.getChildren();
+    }
+
+    private SequentialTransition getBackgroundsTransition() {
+        SequentialTransition sequentialTransition = new SequentialTransition();
+
+        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(5));
+        fadeTransition.setFromValue(1);
+        fadeTransition.setToValue(0);
+
+        fadeTransition.setOnFinished(actionEvent -> {
+            if (sequentialTransition.getStatus() == Animation.Status.RUNNING) {
+                getBackgrounds().removeLast();
+
+                getBackgrounds().addFirst(sequentialTransition.getNode());
+
+                getBackgrounds().getFirst().setOpacity(1);
+
+                this.backgroundsTransition = getBackgroundsTransition();
+                backgroundsTransition.setNode(getBackgrounds().getLast());
+                backgroundsTransition.playFromStart();
+            }
+        });
+
+        sequentialTransition.setAutoReverse(false);
+        sequentialTransition.setDelay(Duration.seconds(5));
+        sequentialTransition.setRate(1);
+
+        sequentialTransition.getChildren().add(fadeTransition);
+        sequentialTransition.getChildren().add(new PauseTransition(Duration.seconds(5)));
+
+        return sequentialTransition;
+    }
+
+
+    private void updateBackgroundsNodes() {
+        ObservableList<Animation> animations = backgroundsTransition.getChildren();
+        animations.clear();
+        getBackgrounds().clear();
+
+        FileUtils.getFilesList(selectedGame.BACKGROUNDS_DIRECTORY, path -> !Files.isDirectory(path)).forEach(path -> {
+            try (InputStream imageIS = Files.newInputStream(path)) {
+                Image image = new Image(imageIS);
+
+                if (!image.isError()) {
+                    ImageView imageView = new ImageView(image);
+                    imageView.setFitWidth(960);
+                    imageView.setFitHeight(540);
+                    imageView.setOpacity(1);
+
+                    getBackgrounds().add(imageView);
+                }
+            }
+            catch (IOException ioException) {
+                throw new RuntimeException(ioException);
+            }
+        });
+
+        this.backgroundsTransition = getBackgroundsTransition();
+        backgroundsTransition.setNode(getBackgrounds().getLast());
+    }
+
+    private void updateGameData() {
+        ObservableList<String> graphics = graphicList.getItems();
+
+        name.setText(selectedGame.instance.name);
+        description.setText(selectedGame.instance.description);
+
+        graphics.clear();
+        graphics.addAll(selectedGame.GRAPHICS_PATHS.keySet());
+        graphicList.getSelectionModel().select(graphics.getFirst());
+    }
+
+    private void updatePreferences() {
+        Console.preferences.profile.nickname = nickname.getText();
+        Console.preferences.settings.ram = Integer.parseInt(ram.getText());
+        Console.preferences.settings.java_arguments = new ArrayList<>(List.of(javaArguments.getText().split(" ")));
+
+        try {
+            GsonUtils.objectToFile(Console.preferences, ConsoleConstants.PREFERENCES_JSON);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
