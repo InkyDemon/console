@@ -8,6 +8,7 @@ import com.console.utils.GsonUtils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -55,7 +56,7 @@ public class Console extends Application {
         scene.setFill(Color.TRANSPARENT);
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setTitle("Console");
-        //TODO stage.getIcons().add(new Image(Starter.class.getResourceAsStream("")));
+        stage.getIcons().add(new Image(Starter.class.getResourceAsStream("logo.png")));
         stage.setScene(scene);
         stage.show();
     }

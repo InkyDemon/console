@@ -167,6 +167,7 @@ public class ConsoleController {
         updatePreferences();
         Stage stage = (Stage) exit.getScene().getWindow();
         stage.close();
+        System.exit(0);
     }
 
     @FXML
