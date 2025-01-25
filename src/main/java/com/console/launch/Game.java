@@ -15,8 +15,6 @@ public class Game {
     public final Path MINECRAFT_DIRECTORY;
     public final Path ICON;
 
-    public final HashMap<String, Path> GRAPHICS_PATHS;
-
     public GameInstance instance;
 
     public Game(Path gameDirectory) {
@@ -27,9 +25,6 @@ public class Game {
         this.MINECRAFT_DIRECTORY = ASSETS_DIRECTORY.resolve("minecraft");
         this.ICON = ASSETS_DIRECTORY.resolve("icon.png");
         this.BACKGROUNDS_DIRECTORY = ASSETS_DIRECTORY.resolve("backgrounds");
-
-        this.GRAPHICS_PATHS = new HashMap<>();
-        FileUtils.getFilesList(MINECRAFT_DIRECTORY, Files::isDirectory).forEach(path -> GRAPHICS_PATHS.put(path.getFileName().toString(), path));
 
         this.instance = GameInstance.fromFile(INSTANCE_FILE);
     }

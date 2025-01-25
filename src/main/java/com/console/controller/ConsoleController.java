@@ -10,8 +10,6 @@ import javafx.animation.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,8 +20,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -34,16 +30,31 @@ import java.util.List;
 
 public class ConsoleController {
     @FXML
+    public ImageView play;
+
+    @FXML
+    public ImageView settings;
+
+    @FXML
+    public AnchorPane leftBar;
+
+    @FXML
+    public ImageView user;
+
+    @FXML
+    public AnchorPane main;
+
+    @FXML
+    public AnchorPane rightBar;
+
+    @FXML
+    public AnchorPane mainBar;
+
+    @FXML
+    public Text version;
+
+    @FXML
     private ImageView exit;
-
-    @FXML
-    private ImageView user;
-
-    @FXML
-    private ImageView settings;
-
-    @FXML
-    private ImageView graphic;
 
     @FXML
     private TextField nickname;
@@ -52,25 +63,13 @@ public class ConsoleController {
     private AnchorPane properties;
 
     @FXML
-    private AnchorPane main;
-
-    @FXML
-    private AnchorPane graphics;
-
-    @FXML
     private AnchorPane AnchorBackgrounds;
-
-    @FXML
-    private ListView<String> graphicList;
 
     @FXML
     private Text name;
 
     @FXML
     private Text description;
-
-    @FXML
-    private Text textGraphic;
 
     @FXML
     private TextField ram;
@@ -93,7 +92,6 @@ public class ConsoleController {
     private static boolean isEditNickname = true;
 
     private static boolean isEditProperties = true;
-    private static boolean isEditGraphics = true;
 
     private Game selectedGame = Console.gamesManager.getGames().get("test");
     private SequentialTransition backgroundsTransition = this.getBackgroundsTransition();
@@ -138,22 +136,9 @@ public class ConsoleController {
 
         name.setFont(Console.getPixelTimes(true, 48));
         description.setFont(Console.getPixelTimes(false, 16));
+        version.setFont(Console.getPixelTimes(false, 16));
 
         nickname.setFont(Console.getPixelTimes(true, 12));
-        textGraphic.setFont(Console.getPixelTimes(false, 12));
-        graphicList.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(item);
-                    setFont(Console.getPixelTimes(false, 12));
-                }
-            }
-        });
 
         ram.setFont(Console.getPixelTimes(false, 12));
         textRam.setFont(Console.getPixelTimes(false, 12));
@@ -204,7 +189,7 @@ public class ConsoleController {
     @FXML
     public void onPlayPressed() throws IOException {
         updatePreferences();
-        Launcher.launch(Console.preferences, selectedGame, graphicList.getSelectionModel().getSelectedItem());
+        Launcher.launch(Console.preferences, selectedGame);
     }
 
     @FXML
@@ -214,9 +199,6 @@ public class ConsoleController {
             FadeTransition fadeTransition = new FadeTransition(Duration.millis(300), properties);
 
             if (!properties.isVisible()) {
-                if (graphics.isVisible()) {
-                    onGraphicsPressed();
-                }
                 properties.setVisible(true);
 
                 fadeTransition.setFromValue(0);
@@ -232,37 +214,6 @@ public class ConsoleController {
             PauseTransition pauseTransition = new PauseTransition(Duration.millis(300));
 
             pauseTransition.setOnFinished(event -> isEditProperties = true);
-
-            pauseTransition.play();
-        }
-    }
-
-    @FXML
-    public void onGraphicsPressed() {
-        if (isEditGraphics) {
-            isEditGraphics = false;
-
-            FadeTransition fadeTransition = new FadeTransition(Duration.millis(300), graphics);
-
-            if (!graphics.isVisible()) {
-                if (properties.isVisible()) {
-                    onSettingsPressed();
-                }
-                graphics.setVisible(true);
-
-                fadeTransition.setFromValue(0);
-                fadeTransition.setToValue(1);
-            } else {
-                fadeTransition.setFromValue(1);
-                fadeTransition.setToValue(0);
-                fadeTransition.setOnFinished(event -> graphics.setVisible(false));
-            }
-
-            fadeTransition.play();
-
-            PauseTransition pauseTransition = new PauseTransition(Duration.millis(300));
-
-            pauseTransition.setOnFinished(event -> isEditGraphics = true);
 
             pauseTransition.play();
         }
@@ -338,14 +289,9 @@ public class ConsoleController {
     }
 
     private void updateGameData() {
-        ObservableList<String> graphics = graphicList.getItems();
-
         name.setText(selectedGame.instance.name);
         description.setText(selectedGame.instance.description);
-
-        graphics.clear();
-        graphics.addAll(selectedGame.GRAPHICS_PATHS.keySet());
-        graphicList.getSelectionModel().select(graphics.getFirst());
+        version.setText(selectedGame.instance.version);
     }
 
     private void updatePreferences() {
