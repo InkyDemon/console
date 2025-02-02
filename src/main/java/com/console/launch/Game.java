@@ -1,6 +1,7 @@
 package com.console.launch;
 
 import com.console.json.GameInstance;
+import com.console.utils.ConsoleConstants;
 import com.console.utils.FileUtils;
 
 import java.nio.file.Files;
@@ -16,6 +17,8 @@ public class Game {
     public final Path ICON;
 
     public GameInstance instance;
+
+    public static final Game EMPTY_GAME = new Game(ConsoleConstants.GAMES_DIRECTORY.resolve("empty"));
 
     public Game(Path gameDirectory) {
         this.GAME_DIRECTORY = gameDirectory;

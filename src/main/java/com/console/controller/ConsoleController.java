@@ -1,6 +1,7 @@
 package com.console.controller;
 
 import com.console.application.Console;
+import com.console.json.GameInstance;
 import com.console.launch.Game;
 import com.console.launch.Launcher;
 import com.console.utils.ConsoleConstants;
@@ -25,8 +26,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ConsoleController {
     @FXML
@@ -93,7 +96,7 @@ public class ConsoleController {
 
     private static boolean isEditProperties = true;
 
-    private Game selectedGame = Console.gamesManager.getGames().get("test");
+    private Game selectedGame = Game.EMPTY_GAME;
     private SequentialTransition backgroundsTransition = this.getBackgroundsTransition();
 
     @FXML
@@ -101,14 +104,12 @@ public class ConsoleController {
         ram.setText(String.valueOf(Console.preferences.settings.ram));
         nickname.setText(Console.preferences.profile.nickname);
         javaArguments.setText(String.join(" ", Console.preferences.settings.java_arguments));
-        this.updateGameData();
-
-        this.updateBackgroundsNodes();
-        if (getBackgrounds().size() > 1) {
-            backgroundsTransition.playFromStart();
-        }
 
         Console.gamesManager.getGames().values().forEach(game -> {
+            if (Objects.equals(selectedGame, Game.EMPTY_GAME)) {
+                selectedGame = game;
+            }
+
             try (InputStream iconIS = Files.newInputStream(game.ICON)) {
                 ImageView iconImage = new ImageView(new Image(iconIS));
                 iconImage.setFitWidth(48);
@@ -133,6 +134,12 @@ public class ConsoleController {
                 throw new RuntimeException(ioException);
             }
         });
+
+        this.updateGameData();
+        this.updateBackgroundsNodes();
+        if (getBackgrounds().size() > 1) {
+            backgroundsTransition.playFromStart();
+        }
 
         name.setFont(Console.getPixelTimes(true, 48));
         description.setFont(Console.getPixelTimes(false, 16));
@@ -291,7 +298,7 @@ public class ConsoleController {
     private void updateGameData() {
         name.setText(selectedGame.instance.name);
         description.setText(selectedGame.instance.description);
-        version.setText(selectedGame.instance.version);
+        version.setText("Версия: " + selectedGame.instance.version);
     }
 
     private void updatePreferences() {
