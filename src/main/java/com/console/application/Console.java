@@ -13,13 +13,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -30,7 +27,7 @@ import java.nio.file.Files;
 
 public class Console extends Application {
     public static Preferences preferences;
-    public static GamesManager gamesManager;
+    public static final GamesManager GAMES_MANAGER = new GamesManager();
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -61,8 +58,6 @@ public class Console extends Application {
                         preferences = Preferences.getDefaultPreferences();
                         GsonUtils.objectToFile(preferences, ConsoleConstants.PREFERENCES_JSON);
                     }
-
-                    gamesManager = new GamesManager(ConsoleConstants.GAMES_DIRECTORY);
 
                     this.showLauncher(primaryStage);
                 }

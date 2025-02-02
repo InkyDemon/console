@@ -1,8 +1,7 @@
 package com.console.launch;
 
-import com.console.utils.UrlUtils;
-
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -15,7 +14,7 @@ import java.util.zip.ZipInputStream;
 
 public class Downloader {
     public static void downloadGithubRep(String repUrl, Path outputDir) throws IOException {
-        URL toUrl = UrlUtils.createUrl(repUrl);
+        URL toUrl = URI.create(repUrl).toURL();
 
         try (ZipInputStream zipIS = new ZipInputStream(toUrl.openStream())) {
             String repDirName = Objects.requireNonNull(zipIS.getNextEntry()).getName();

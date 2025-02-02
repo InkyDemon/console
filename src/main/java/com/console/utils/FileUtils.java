@@ -8,13 +8,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class FileUtils {
-    public static void createParentDirs(Path filePath) throws IOException {
-        Path parentPath = filePath.getParent();
-        if (parentPath != null) {
-            Files.createDirectories(parentPath);
-        }
-    }
-
     public static ArrayList<Path> getFilesList(Path directory, Predicate<? super Path> filter) {
         try (Stream<Path> files = Files.list(directory)) {
             return new ArrayList<>(files.filter(filter).toList());
@@ -22,9 +15,5 @@ public class FileUtils {
         catch (IOException ioException) {
             return new ArrayList<>();
         }
-    }
-
-    public static ArrayList<Path> getFilesList(Path directory) {
-        return getFilesList(directory, (path) -> true);
     }
 }

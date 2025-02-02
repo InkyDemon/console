@@ -17,10 +17,6 @@ public class GameInstance {
         this.version = version;
     }
 
-    public static GameInstance getDefaultInstance() {
-        return new GameInstance("Название", "Описание", "Версия");
-    }
-
     public static GameInstance fromFile(Path file) {
         try {
             String json = Files.readString(file);
@@ -28,7 +24,7 @@ public class GameInstance {
             return GsonUtils.jsonToObject(json, GameInstance.class);
         }
         catch (IOException ioException) {
-            return GameInstance.getDefaultInstance();
+            return new GameInstance("Null", "Null", "Null");
         }
     }
 }

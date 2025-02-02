@@ -1,7 +1,6 @@
 package com.console.controller;
 
 import com.console.application.Console;
-import com.console.json.GameInstance;
 import com.console.launch.Game;
 import com.console.launch.Launcher;
 import com.console.utils.ConsoleConstants;
@@ -16,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -26,10 +26,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ConsoleController {
     @FXML
@@ -49,6 +47,9 @@ public class ConsoleController {
 
     @FXML
     public AnchorPane rightBar;
+
+    @FXML
+    private AnchorPane gamesNotFound;
 
     @FXML
     public AnchorPane mainBar;
@@ -96,7 +97,7 @@ public class ConsoleController {
 
     private static boolean isEditProperties = true;
 
-    private Game selectedGame = Game.EMPTY_GAME;
+    private Game selectedGame;
     private SequentialTransition backgroundsTransition = this.getBackgroundsTransition();
 
     @FXML
@@ -105,58 +106,38 @@ public class ConsoleController {
         nickname.setText(Console.preferences.profile.nickname);
         javaArguments.setText(String.join(" ", Console.preferences.settings.java_arguments));
 
-        Console.gamesManager.getGames().values().forEach(game -> {
-            if (Objects.equals(selectedGame, Game.EMPTY_GAME)) {
-                selectedGame = game;
-            }
-
-            try (InputStream iconIS = Files.newInputStream(game.ICON)) {
-                ImageView iconImage = new ImageView(new Image(iconIS));
-                iconImage.setFitWidth(48);
-                iconImage.setFitHeight(48);
-
-                iconImage.setOnMouseClicked(mouseEvent -> {
-                    if (selectedGame != game) {
-                        selectedGame = game;
-                        this.updateGameData();
-
-                        backgroundsTransition.pause();
-                        this.updateBackgroundsNodes();
-
-                        if (getBackgrounds().size() > 1) {
-                            backgroundsTransition.playFromStart();
-                        }
-                    }
-                });
-
-                games.getChildren().add(iconImage);
-            } catch (IOException ioException) {
-                throw new RuntimeException(ioException);
-            }
-        });
-
-        this.updateGameData();
-        this.updateBackgroundsNodes();
-        if (getBackgrounds().size() > 1) {
-            backgroundsTransition.playFromStart();
+        if (Console.GAMES_MANAGER.getGames().isEmpty()) {
+            gamesNotFound.setVisible(true);
+        }
+        else {
+            this.updateGames();
         }
 
+        Font regular12 = Console.getPixelTimes(false, 12);
+        Font regular16 = Console.getPixelTimes(false, 16);
+
         name.setFont(Console.getPixelTimes(true, 48));
-        description.setFont(Console.getPixelTimes(false, 16));
-        version.setFont(Console.getPixelTimes(false, 16));
+        description.setFont(regular16);
+        version.setFont(regular16);
 
         nickname.setFont(Console.getPixelTimes(true, 12));
 
-        ram.setFont(Console.getPixelTimes(false, 12));
-        textRam.setFont(Console.getPixelTimes(false, 12));
-        textMB.setFont(Console.getPixelTimes(false, 12));
-        textJavaArguments.setFont(Console.getPixelTimes(false, 12));
-        javaArguments.setFont(Console.getPixelTimes(false, 12));
+        ram.setFont(regular12);
+        textRam.setFont(regular12);
+        textMB.setFont(regular12);
+        textJavaArguments.setFont(regular12);
+        javaArguments.setFont(regular12);
+
+        gamesNotFound.getChildren().forEach(node -> {
+            if (node instanceof Text text) {
+                text.setFont(Console.getPixelTimes(false, text.getFont().getSize()));
+            }
+        });
     }
 
     @FXML
     public void onExitPressed() {
-        updatePreferences();
+        this.updatePreferences();
         Stage stage = (Stage) exit.getScene().getWindow();
         stage.close();
         System.exit(0);
@@ -195,8 +176,10 @@ public class ConsoleController {
 
     @FXML
     public void onPlayPressed() throws IOException {
-        updatePreferences();
-        Launcher.launch(Console.preferences, selectedGame);
+        if (selectedGame != null) {
+            this.updatePreferences();
+            Launcher.launch(Console.preferences, selectedGame);
+        }
     }
 
     @FXML
@@ -223,6 +206,44 @@ public class ConsoleController {
             pauseTransition.setOnFinished(event -> isEditProperties = true);
 
             pauseTransition.play();
+        }
+    }
+
+    private void updateGames() {
+        Console.GAMES_MANAGER.getGames().forEach(game -> {
+            if (selectedGame == null) {
+                selectedGame = game;
+            }
+
+            try (InputStream iconIS = Files.newInputStream(game.ICON)) {
+                ImageView iconImage = new ImageView(new Image(iconIS));
+                iconImage.setFitWidth(48);
+                iconImage.setFitHeight(48);
+
+                iconImage.setOnMouseClicked(mouseEvent -> {
+                    if (selectedGame != game) {
+                        selectedGame = game;
+                        this.updateGameData();
+
+                        backgroundsTransition.pause();
+                        this.updateBackgroundsNodes();
+
+                        if (getBackgrounds().size() > 1) {
+                            backgroundsTransition.playFromStart();
+                        }
+                    }
+                });
+
+                games.getChildren().add(iconImage);
+            } catch (IOException ioException) {
+                throw new RuntimeException(ioException);
+            }
+        });
+
+        this.updateGameData();
+        this.updateBackgroundsNodes();
+        if (this.getBackgrounds().size() > 1) {
+            backgroundsTransition.playFromStart();
         }
     }
 
@@ -296,9 +317,9 @@ public class ConsoleController {
     }
 
     private void updateGameData() {
-        name.setText(selectedGame.instance.name);
-        description.setText(selectedGame.instance.description);
-        version.setText("Версия: " + selectedGame.instance.version);
+        name.setText(selectedGame.INSTANCE.name);
+        description.setText(selectedGame.INSTANCE.description);
+        version.setText("Версия: " + selectedGame.INSTANCE.version);
     }
 
     private void updatePreferences() {

@@ -5,8 +5,6 @@ import com.console.utils.ConsoleConstants;
 import com.console.utils.GsonUtils;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -30,8 +28,6 @@ public class Launcher {
             finalCommand.add("--gameDir"); finalCommand.add(selectedGame.MINECRAFT_DIRECTORY.toString());
             finalCommand.add("--uuid"); finalCommand.add(preferences.profile.uuid);
             finalCommand.add("--accessToken"); finalCommand.add(preferences.profile.uuid);
-
-            System.out.println(finalCommand);
 
             ProcessBuilder processBuilder = new ProcessBuilder(finalCommand);
             processBuilder.directory(selectedGame.MINECRAFT_DIRECTORY.toFile());

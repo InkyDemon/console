@@ -1,12 +1,8 @@
 package com.console.launch;
 
 import com.console.json.GameInstance;
-import com.console.utils.ConsoleConstants;
-import com.console.utils.FileUtils;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 
 public class Game {
     public final Path GAME_DIRECTORY;
@@ -16,9 +12,7 @@ public class Game {
     public final Path MINECRAFT_DIRECTORY;
     public final Path ICON;
 
-    public GameInstance instance;
-
-    public static final Game EMPTY_GAME = new Game(ConsoleConstants.GAMES_DIRECTORY.resolve("empty"));
+    public final GameInstance INSTANCE;
 
     public Game(Path gameDirectory) {
         this.GAME_DIRECTORY = gameDirectory;
@@ -29,6 +23,6 @@ public class Game {
         this.ICON = ASSETS_DIRECTORY.resolve("icon.png");
         this.BACKGROUNDS_DIRECTORY = ASSETS_DIRECTORY.resolve("backgrounds");
 
-        this.instance = GameInstance.fromFile(INSTANCE_FILE);
+        this.INSTANCE = GameInstance.fromFile(INSTANCE_FILE);
     }
 }

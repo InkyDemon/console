@@ -32,101 +32,105 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.Glow?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
-<AnchorPane fx:id="main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="540.0" prefWidth="960.0" style="-fx-background-radius: 20;" styleClass="root"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.console.controller.ConsoleController">
-   <AnchorPane fx:id="AnchorBackgrounds" prefHeight="540.0" prefWidth="960.0"/>
-   <AnchorPane fx:id="leftBar" prefHeight="540.0" prefWidth="47.0">
-      <ImageView fx:id="user" fitHeight="48.0" fitWidth="48.0" layoutX="3.0" layoutY="6.0"
-                 onMousePressed="#onUserPressed">
-         <Image url="@../icons/user.png"/>
+
+<AnchorPane fx:id="main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.console.controller.ConsoleController">
+   <AnchorPane fx:id="AnchorBackgrounds" prefHeight="540.0" prefWidth="960.0">
+      <rotationAxis>
+         <Point3D />
+      </rotationAxis></AnchorPane>
+   <AnchorPane id="leftBar" fx:id="leftBar" prefHeight="540.0" prefWidth="47.0">
+      <ImageView fx:id="user" fitHeight="48.0" fitWidth="48.0" layoutY="6.0" onMousePressed="#onUserPressed">
+         <Image url="@../icons/user.png" />
       </ImageView>
-      <VBox fx:id="games" alignment="CENTER" layoutX="3.0" layoutY="52.0" prefHeight="489.0" prefWidth="47.0"/>
+      <VBox fx:id="games" alignment="CENTER" layoutY="52.0" prefHeight="489.0" prefWidth="47.0">
+         <rotationAxis>
+            <Point3D />
+         </rotationAxis></VBox>
+      <rotationAxis>
+         <Point3D />
+      </rotationAxis>
    </AnchorPane>
    <AnchorPane fx:id="mainBar" layoutX="146.0" prefHeight="540.0" prefWidth="429.0">
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#0d0d0d4d" height="540.0" stroke="#70707000"
-                 strokeType="INSIDE" width="429.0"/>
-      <ImageView fx:id="settings" fitHeight="48.0" fitWidth="48.0" layoutX="71.0" layoutY="372.0"
-                 onMousePressed="#onSettingsPressed" pickOnBounds="true" preserveRatio="true">
-         <Image url="@../icons/settings.png"/>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#0d0d0d4d" height="540.0" stroke="#70707000" strokeType="INSIDE" width="429.0" />
+      <ImageView fx:id="settings" fitHeight="48.0" fitWidth="48.0" layoutX="71.0" layoutY="372.0" onMousePressed="#onSettingsPressed" pickOnBounds="true" preserveRatio="true">
+         <Image url="@../icons/settings.png" />
       </ImageView>
-      <ImageView fx:id="play" fitHeight="48.0" fitWidth="48.0" layoutX="14.0" layoutY="372.0"
-                 onMousePressed="#onPlayPressed" pickOnBounds="true" preserveRatio="true">
-         <Image url="@../icons/play.png"/>
+      <ImageView fx:id="play" fitHeight="48.0" fitWidth="48.0" layoutX="14.0" layoutY="372.0" onMousePressed="#onPlayPressed" pickOnBounds="true" preserveRatio="true">
+         <Image url="@../icons/play.png" />
       </ImageView>
-      <Text fx:id="name" fill="WHITE" layoutX="14.0" layoutY="288.0" strokeType="OUTSIDE" strokeWidth="0.0"
-            text="Cellar+">
+      <Text fx:id="name" fill="WHITE" layoutX="14.0" layoutY="288.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cellar+">
          <font>
-            <Font name="Malgun Gothic Bold" size="48.0"/>
+            <Font name="Malgun Gothic Bold" size="48.0" />
          </font>
       </Text>
-      <Text fx:id="description" fill="#9e9e9e" layoutX="11.0" layoutY="305.0" strokeType="OUTSIDE" strokeWidth="0.0"
-            text="Этот режим разрабатывался бенди какашкой" wrappingWidth="406.720703125">
+      <Text fx:id="description" fill="#9e9e9e" layoutX="11.0" layoutY="305.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Этот режим разрабатывался бенди какашкой" wrappingWidth="406.720703125">
          <font>
-            <Font name="Malgun Gothic Bold" size="14.0"/>
+            <Font name="Malgun Gothic Bold" size="14.0" />
          </font>
       </Text>
-      <Text fx:id="version" fill="#9e9e9e" layoutX="11.0" layoutY="322.0" strokeType="OUTSIDE" strokeWidth="0.0"
-            text="1.0" wrappingWidth="406.720703125">
+      <Text fx:id="version" fill="#9e9e9e" layoutX="11.0" layoutY="322.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1.0" wrappingWidth="406.720703125">
          <font>
-            <Font name="Malgun Gothic Bold" size="14.0"/>
+            <Font name="Malgun Gothic Bold" size="14.0" />
          </font>
       </Text>
-      <AnchorPane fx:id="properties" layoutX="15.0" layoutY="425.0" prefHeight="79.0" prefWidth="284.0"
-                  style="-fx-background-color: rgba(34, 34, 34, 34); -fx-background-radius: 15;" visible="false">
-         <TextField fx:id="ram" focusTraversable="false" layoutX="41.0" layoutY="6.0" prefHeight="26.0"
-                    prefWidth="59.0" style="-fx-background-color: rgba(24, 24, 24, 24); -fx-text-fill: white;"
-                    text="2000"/>
-         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#2c2c2c" height="79.0" stroke="#38353500"
-                    strokeType="INSIDE" visible="false" width="284.0"/>
-         <Text fx:id="textRam" fill="WHITE" layoutX="9.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0"
-               text="ОЗУ">
+      <AnchorPane fx:id="properties" layoutX="15.0" layoutY="425.0" prefHeight="79.0" prefWidth="284.0" style="-fx-background-color: rgba(34, 34, 34, 34); -fx-background-radius: 15;" visible="false">
+         <TextField fx:id="ram" focusTraversable="false" layoutX="41.0" layoutY="6.0" prefHeight="26.0" prefWidth="59.0" style="-fx-background-color: rgba(24, 24, 24, 24); -fx-text-fill: white;" text="2000" />
+         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#2c2c2c" height="79.0" stroke="#38353500" strokeType="INSIDE" visible="false" width="284.0" />
+         <Text fx:id="textRam" fill="WHITE" layoutX="9.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ОЗУ">
             <font>
-               <Font name="Malgun Gothic Bold" size="14.0"/>
+               <Font name="Malgun Gothic Bold" size="14.0" />
             </font>
          </Text>
-         <Text fx:id="textJavaArguments" fill="WHITE" layoutX="7.0" layoutY="56.0" strokeType="OUTSIDE"
-               strokeWidth="0.0" text="Java Аргументы">
+         <Text fx:id="textJavaArguments" fill="WHITE" layoutX="7.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Java Аргументы">
             <font>
-               <Font name="Malgun Gothic Bold" size="14.0"/>
+               <Font name="Malgun Gothic Bold" size="14.0" />
             </font>
          </Text>
-         <Text fx:id="textMB" fill="WHITE" layoutX="110.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0"
-               text="МБ">
+         <Text fx:id="textMB" fill="WHITE" layoutX="110.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="МБ">
             <font>
-               <Font name="Malgun Gothic Bold" size="14.0"/>
+               <Font name="Malgun Gothic Bold" size="14.0" />
             </font>
          </Text>
-         <TextField fx:id="javaArguments" focusTraversable="false" layoutX="121.0" layoutY="37.0"
-                    prefHeight="26.0" prefWidth="152.0"
-                    style="-fx-background-color: rgba(24, 24, 24, 24); -fx-text-fill: white;"/>
+         <TextField fx:id="javaArguments" focusTraversable="false" layoutX="121.0" layoutY="37.0" prefHeight="26.0" prefWidth="152.0" style="-fx-background-color: rgba(24, 24, 24, 24); -fx-text-fill: white;" />
       </AnchorPane>
    </AnchorPane>
-   <AnchorPane fx:id="rightBar" layoutX="590.0" layoutY="3.0" maxHeight="-Infinity" maxWidth="-Infinity"
-               minHeight="-Infinity" minWidth="-Infinity" prefHeight="534.0" prefWidth="370.0">
-      <ImageView fx:id="exit" fitHeight="48.0" fitWidth="48.0" layoutX="314.0" onMousePressed="#onExitPressed"
-                 pickOnBounds="true" preserveRatio="true">
-         <Image url="@../icons/exit.png"/>
+   <AnchorPane fx:id="rightBar" layoutX="590.0" layoutY="3.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="534.0" prefWidth="370.0">
+      <ImageView fx:id="exit" fitHeight="48.0" fitWidth="48.0" layoutX="314.0" onMousePressed="#onExitPressed" pickOnBounds="true" preserveRatio="true">
+         <Image url="@../icons/exit.png" />
       </ImageView>
-      <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="314.0" layoutY="489.0" onMousePressed="#onDiscordPressed"
-                 pickOnBounds="true" preserveRatio="true">
-         <Image url="@../icons/discord.png"/>
+      <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="314.0" layoutY="489.0" onMousePressed="#onDiscordPressed" pickOnBounds="true" preserveRatio="true">
+         <Image url="@../icons/discord.png" />
       </ImageView>
-      <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="48.0" layoutY="48.0" pickOnBounds="true"
-                 preserveRatio="true"/>
+      <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="48.0" layoutY="48.0" pickOnBounds="true" preserveRatio="true" />
    </AnchorPane>
-   <TextField fx:id="nickname" focusTraversable="false" layoutX="61.0" layoutY="16.0" promptText="Nickname"
-              style="-fx-background-color: rgba(10, 10, 10, 10); -fx-text-fill: white;" styleClass="text-field"
-              visible="false">
+   <TextField fx:id="nickname" focusTraversable="false" layoutX="61.0" layoutY="16.0" promptText="Nickname" style="-fx-background-color: rgba(10, 10, 10, 10); -fx-text-fill: white;" styleClass="text-field" visible="false">
       <effect>
-         <Glow/>
+         <Glow />
       </effect>
    </TextField>
+   <AnchorPane id="gamesNotFound" fx:id="gamesNotFound" prefHeight="540.0" prefWidth="960.0" visible="false">
+      <Text fill="WHITE" layoutX="210.0" layoutY="257.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Не удалось найти игры..." textAlignment="CENTER">
+         <font>
+            <Font size="48.0" />
+         </font>
+      </Text>
+      <Text fill="WHITE" layoutX="293.0" layoutY="286.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Перезайдите в лаунчер, чтобы попробовать снова">
+         <font>
+            <Font size="16.0" />
+         </font></Text>
+
+      <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="456.0" layoutY="304.0" onMousePressed="#onExitPressed" pickOnBounds="true" preserveRatio="true">
+         <Image url="@../icons/exit.png" />
+      </ImageView>
+   </AnchorPane>
+   <rotationAxis>
+      <Point3D />
+   </rotationAxis>
 </AnchorPane>
